@@ -1,7 +1,7 @@
 {
-  "name": "reactpwamathsexcercise",
+  "name": "reactjscryptopricetracker",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "homepage": "https://nileshsp.github.io/ReactJsCryptoPriceTracker",
   "dependencies": {
     "jscs": "^3.0.7",
