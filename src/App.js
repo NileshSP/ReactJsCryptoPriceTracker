@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Socket from 'socket.io-client';
 import { isNullOrUndefined } from 'util';
+import idb from 'idb';
 //import cityData from '../city.list.json';
 
 class App extends Component {
@@ -54,13 +55,20 @@ class MainComponent extends React.Component {
           'mode' : 'cors' 
         },
       );
+
       const resultCoinList = await fetchCoinList.json(); 
       const items = Object.values(resultCoinList.Data).sort((a,b) => a.FullName.localeCompare(b.FullName));
+      let getExistingItems = await this.getItemsLocally();
+      //console.log(`first time ${[...getExistingItems]}`)
+      getExistingItems = getExistingItems.size === 0 ? new Set([...items].filter(s => [`BTC`,`ETH`,`LTC`,`DASH`,`XRP`].includes(s.Symbol))) : getExistingItems;  
+      //console.log(`second time ${[...getExistingItems]}`)
       this.setState({ 
         listOfOriginalItems: new Set([...items]),
-        listOfSubscribedItems: new Set([...items].filter(s => [`BTC`,`ETH`,`LTC`,`DASH`,`XRP`].includes(s.Symbol)))
-       }, this.getPricesSubscribed)
-      //console.log(this.state.listOfOriginalItems);
+        listOfSubscribedItems: getExistingItems
+      },() => {
+          this.storeItemsLocally();
+          this.getPricesSubscribed();
+      })
   }
 
   async getPricesSubscribed() {
@@ -147,7 +155,8 @@ class MainComponent extends React.Component {
       listOfSubscribedItems: new Set(revisedItems),
       searchMatches: new Set([])
     }),() => {
-      this.refs.searchTxtInput.value = ``; 
+      this.refs.searchTxtInput.value = ``;
+      this.storeItemsLocally(); 
       this.getPricesSubscribed()
     })
   }
@@ -173,7 +182,10 @@ class MainComponent extends React.Component {
     this.setState(({
       listOfSubscribedItems: new Set(revisedItems),
       searchMatches: new Set([])
-    }),() => this.getPricesSubscribed())
+    }),() => {
+      this.storeItemsLocally();
+      this.getPricesSubscribed()
+    })
   }
   async findMatches(wordToMatch) {
     return (wordToMatch.length > 0 ? 
@@ -183,6 +195,47 @@ class MainComponent extends React.Component {
                   }) 
               : []
            );
+  };
+
+  getDbContext() {
+    return idb.open('CryptoPriceDatabase', 1, upgradeDB => {
+      switch (upgradeDB.oldVersion) {
+        case 1:
+          upgradeDB.createObjectStore('CryptoPriceList', {keyPath: 'Id'});
+        default:
+          upgradeDB.createObjectStore('CryptoPriceList', {keyPath: 'Id'});  
+      }
+    });
+  }
+  storeItemsLocally() {
+    this.getDbContext()
+    .then(db => {
+      const tx = db.transaction('CryptoPriceList', 'readwrite');
+      this.state.listOfSubscribedItems.forEach(s => {
+        db.transaction('CryptoPriceList', 'readwrite').objectStore('CryptoPriceList').put({Id:s.Id, Symbol:s.Symbol, FullName: s.FullName})
+      });
+      return tx.complete;
+    })
+    .catch(err => {
+      console.log(`Error: ${err}`)
+      return false;
+    });
+  }
+
+  getItemsLocally() {
+    let listItems = new Set();
+    return this.getDbContext()
+    .then(db => {
+      return db.transaction('CryptoPriceList').objectStore('CryptoPriceList').getAll();
+    })
+    .then(allObjs => {
+      [...allObjs].map(s => listItems.add({ FullName: s.FullName, Id: s.Id, Symbol: s.Symbol, Price: null, PriceChangeType: null }));
+      return listItems;
+    })
+    .catch(err => {
+      console.log(`Error: ${err}`)
+      return listItems;
+    });
   }
 
   render() {
