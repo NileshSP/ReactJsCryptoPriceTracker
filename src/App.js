@@ -9,9 +9,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-intro">
-          <MainComponent />
-        </div>
+        <div className="topPerspective"></div>
+          <div className="App-intro">
+            <MainComponent />
+          </div>
       </div>
     );
   }
@@ -201,41 +202,44 @@ class MainComponent extends React.Component {
     return idb.open('CryptoPriceDatabase', 1, upgradeDB => {
       switch (upgradeDB.oldVersion) {
         case 1:
-          upgradeDB.createObjectStore('CryptoPriceList', {keyPath: 'Id'});
+          upgradeDB.createObjectStore('CryptoPriceList', {keyPath: 'id', autoIncrement:true});
+          break;
         default:
-          upgradeDB.createObjectStore('CryptoPriceList', {keyPath: 'Id'});  
+          upgradeDB.createObjectStore('CryptoPriceList', {keyPath: 'id', autoIncrement:true});  
       }
     });
   }
+
   storeItemsLocally() {
     this.getDbContext()
-    .then(db => {
-      const tx = db.transaction('CryptoPriceList', 'readwrite');
-      this.state.listOfSubscribedItems.forEach(s => {
-        db.transaction('CryptoPriceList', 'readwrite').objectStore('CryptoPriceList').put({Id:s.Id, Symbol:s.Symbol, FullName: s.FullName})
-      });
-      return tx.complete;
-    })
-    .catch(err => {
-      console.log(`Error: ${err}`)
-      return false;
-    });
+        .then(db => {
+          const tx = db.transaction('CryptoPriceList', 'readwrite');
+          tx.objectStore('CryptoPriceList').clear();
+          this.state.listOfSubscribedItems.forEach(s => {
+            tx.objectStore('CryptoPriceList').put({Id:s.Id, Symbol:s.Symbol, FullName: s.FullName})
+          });
+          return tx.complete;
+        })
+        .catch(err => {
+          console.log(`Error: ${err}`)
+          return false;
+        });
   }
 
   getItemsLocally() {
     let listItems = new Set();
     return this.getDbContext()
-    .then(db => {
-      return db.transaction('CryptoPriceList').objectStore('CryptoPriceList').getAll();
-    })
-    .then(allObjs => {
-      [...allObjs].map(s => listItems.add({ FullName: s.FullName, Id: s.Id, Symbol: s.Symbol, Price: null, PriceChangeType: null }));
-      return listItems;
-    })
-    .catch(err => {
-      console.log(`Error: ${err}`)
-      return listItems;
-    });
+                .then(db => {
+                  return db.transaction('CryptoPriceList').objectStore('CryptoPriceList').getAll();
+                })
+                .then(allObjs => {
+                  [...allObjs].map(s => listItems.add({ FullName: s.FullName, Id: s.Id, Symbol: s.Symbol, Price: null, PriceChangeType: null }));
+                  return listItems;
+                })
+                .catch(err => {
+                  console.log(`Error: ${err}`)
+                  return listItems;
+                });
   }
 
   render() {
@@ -291,7 +295,7 @@ class ItemList extends React.Component {
     const updateType = !isNullOrUndefined(itemObj.PriceChangeType) ? itemObj.PriceChangeType.replace(`4`,`+/- $`).replace(`1`,` + $`).replace(`2`,` - $`) : ``
     return  <span className='list-item-container'>  
               <span className='list-item'>{ `${itemObj.Symbol}\\USD - ${itemObj.FullName}` }</span>
-              <span className='list-item' { ...{ style : { 'color' : (itemObj.PriceChangeType === `1` ? `green` : (itemObj.PriceChangeType === `2` ? `red` : `black`)) }}}
+              <span className='list-item' { ...{ style : { 'color' : (itemObj.PriceChangeType === `1` ? `green` : (itemObj.PriceChangeType === `2` ? `red` : `lightyellow`)) }}}
                 >{ !isNullOrUndefined(itemObj.Price) ? `${updateType}${itemObj.Price}` : `N/A` }</span>
               <span className='list-item' onClick={() => this.removeItem(itemObj)} title='Delete?' >X</span>
             </span>;
