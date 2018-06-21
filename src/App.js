@@ -66,16 +66,17 @@ class MainComponent extends React.Component {
       catch(e) {
         console.log(e)
       }
-
-      getExistingItems = getExistingItems.size === 0 ? new Set([...items].filter(s => [`BTC`,`ETH`,`LTC`,`DASH`,`XRP`].includes(s.Symbol))) : getExistingItems;  
-      this.setState({ 
-        listOfOriginalItems: new Set([...items]),
-        listOfSubscribedItems: getExistingItems,
-        itemsFetched:true
-      },() => {
-          this.storeItemsLocally();
-          this.getPricesSubscribed();
-      })
+      finally {
+        getExistingItems = getExistingItems.size === 0 ? new Set([...items].filter(s => [`BTC`,`ETH`,`LTC`,`DASH`,`XRP`].includes(s.Symbol))) : getExistingItems;  
+        this.setState({ 
+          listOfOriginalItems: new Set([...items]),
+          listOfSubscribedItems: getExistingItems,
+          itemsFetched:true
+        },() => {
+            this.storeItemsLocally();
+            this.getPricesSubscribed();
+        })
+      }
   }
 
   async getPricesSubscribed() {
