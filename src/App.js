@@ -28,7 +28,8 @@ class MainComponent extends React.Component {
       listOfOriginalItems: new Set([]), 
       searchMatches: new Set([]), 
       searchText: '',
-      searchCurrItemIndex: 0 
+      searchCurrItemIndex: 0,
+      itemsFetched: false 
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,35 +38,40 @@ class MainComponent extends React.Component {
   }
 
   async getListSearchItems() {
-    //list of cities
-    //console.log(cityData.length);
-    // const fetchData = await fetch('city.list.json', {
-    //   headers : { 
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json'
-    //    }
-    // })
-    // const resultData = await fetchData.json() 
-    // console.log(resultData);
-    // console.log(resultData.map(item => {
-    //    const itemObj = JSON.parse(JSON.stringify(item));
-    //    return '{ id=' + itemObj.id + ', name=' + item.name + ' }';
-    // }).join());
+      //list of cities
+      //console.log(cityData.length);
+      // const fetchData = await fetch('city.list.json', {
+      //   headers : { 
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json'
+      //    }
+      // })
+      // const resultData = await fetchData.json() 
+      // console.log(resultData);
+      // console.log(resultData.map(item => {
+      //    const itemObj = JSON.parse(JSON.stringify(item));
+      //    return '{ id=' + itemObj.id + ', name=' + item.name + ' }';
+      // }).join());
     
-      const fetchCoinList = await fetch('https://min-api.cryptocompare.com/data/all/coinlist', {
-          'mode' : 'cors' 
-        },
-      );
-
-      const resultCoinList = await fetchCoinList.json(); 
-      const items = Object.values(resultCoinList.Data).sort((a,b) => a.FullName.localeCompare(b.FullName));
       let getExistingItems = await this.getItemsLocally();
-      //console.log(`first time ${[...getExistingItems]}`)
+      let items;
+      try {
+          const fetchCoinList = await fetch('https://min-api.cryptocompare.com/data/all/coinlist', {
+            'mode' : 'cors' 
+          },
+        );
+        const resultCoinList = await fetchCoinList.json(); 
+        items = Object.values(resultCoinList.Data).sort((a,b) => a.FullName.localeCompare(b.FullName));
+      }
+      catch(e) {
+        console.log(e)
+      }
+
       getExistingItems = getExistingItems.size === 0 ? new Set([...items].filter(s => [`BTC`,`ETH`,`LTC`,`DASH`,`XRP`].includes(s.Symbol))) : getExistingItems;  
-      //console.log(`second time ${[...getExistingItems]}`)
       this.setState({ 
         listOfOriginalItems: new Set([...items]),
-        listOfSubscribedItems: getExistingItems
+        listOfSubscribedItems: getExistingItems,
+        itemsFetched:true
       },() => {
           this.storeItemsLocally();
           this.getPricesSubscribed();
@@ -256,7 +262,13 @@ class MainComponent extends React.Component {
                   onChange={async (e) => this.handleChange(e)}
                   onKeyDown={async (e) => this.handleKeyMove(e)}
                   ref="searchTxtInput"
-                  placeholder={this.state.listOfOriginalItems.size > 0 ? "awaiting input to search for coins.." : "loading list of coins.."}
+                  placeholder={this.state.itemsFetched === true && this.state.listOfOriginalItems.size > 0 
+                                      ? "awaiting input to search for coins.." 
+                                      : (this.state.itemsFetched === true && this.state.listOfOriginalItems.size === 0 
+                                                ? "list of coins currently not available to search.." 
+                                                : "loading list of coins.."
+                                        )
+                              }
                   autoComplete="off"
                   type="text"
                 />
