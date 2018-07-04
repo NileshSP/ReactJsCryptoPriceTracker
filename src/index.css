@@ -2,8 +2,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background: linear-gradient(to bottom, #90d8fa 0%, #15a0f1 100%) fixed;
+  background-color: #90d8fa;
   /* 
+  background: linear-gradient(to bottom, #90d8fa 0%, #15a0f1 100%) fixed;
   background: linear-gradient(270deg, #04f251, #f86964) ;
   background-size: 400% 400%;
   

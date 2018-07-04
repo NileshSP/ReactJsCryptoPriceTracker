@@ -3,6 +3,14 @@
   --hover-textdecoration:none;
 }
 
+.topPerspective{
+  background-color: rgb(117, 198, 252);
+  width:100%;
+  height:20px;
+  border: solid 0px red;
+  clip-path: polygon(50% 0%, 93% 0, 82% 100%, 18% 100%, 8% 0);
+}
+
 @keyframes AddingAnimation{
   0%{
       transform: rotate(0) translateY(-20%);
@@ -16,41 +24,18 @@
 
 .App {
 	font-family: 'Poppins', sans-serif;
-  text-align: center;
-  display:flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: solid 0px red;
   opacity:0;
   animation: AddingAnimation 1s forwards 0s ease;
 }
 
-.topPerspective{
-  background-color: rgb(117, 198, 252);
-  width:100%;
-  height:20px;
-  border: solid 0px red;
-  clip-path: polygon(50% 0%, 93% 0, 82% 100%, 18% 100%, 8% 0);
-}
-
 .App-intro {
-  text-align: center;
-  display:flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  text-align:center;
+  display:grid;
+  grid-template-columns: 60%;
+  grid-gap: 30px;
+  justify-content: center;
   border: solid 0px red;
 }
-
-.App-intro div {
-  padding-top: 0px;
-}
-
-.App-intro div:nth-child(1) {
-  padding-top: 20px;
-}
-
 
 @keyframes shine {
   to {
@@ -59,6 +44,7 @@
 }
 
 .App-title {
+  border: solid 0px red;
   font-size: 5vmax;
 	font-family: 'Poppins', sans-serif;
   background: linear-gradient(to left, lightgreen 20%, red 40%, red 60%, lightgreen 80%);
@@ -70,20 +56,13 @@
   animation: shine 20s linear infinite;
 }
 
-
-/* @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-} */
-
 /* The container <div> - needed to position the dropdown content */
 .search-dropdown {
-  width:70vmin;
+  width:100%;
   position: relative;
 }
 
 input[id=new-location] {
-  margin-top:10px;
   box-shadow: 2px 8px 16px 2px rgba(0,0,0,0.2);
   box-sizing:border-box;
   border: 1px solid transparent;
@@ -92,7 +71,6 @@ input[id=new-location] {
   font-size: 14px;
   background-color: #f1f1f1;
   width: 100%;
-  flex:1;
   border-radius: 5px;
 }
 
@@ -105,7 +83,7 @@ input[id=new-location] {
   position: absolute;
   background-color: #f9f9f9;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  overflow:hidden;
+  overflow:auto;
   flex:1;
   border: solid 0px red;
   transition: max-height 1s linear;
@@ -160,23 +138,12 @@ input[id=new-location] {
   color:black;
   padding: 10px;
   font-size: 14px;
-  border-bottom: solid 0.25px lightgray;
+  border-bottom: solid 0.25px gray;
   animation: AddingAnimation 1s forwards 0s ease-in-out;
 }
 
 .inline-search-text {
   text-decoration: underline;
-}
-
-.div-list-items {
-  padding-top: 40px;
-}
-
-.div-list-title {
-  font-weight: bold;
-  font-size: medium;
-  padding: 10px;
-  color:transparent;  
 }
 
 .list-item-container {
@@ -196,7 +163,7 @@ input[id=new-location] {
 
 .list-item:first-child {
   text-decoration: var(--hover-textdecoration);
-  color:rgb(245, 245, 245);
+  color:steelblue;
   font-weight:lighter
 }
 
@@ -216,4 +183,10 @@ input[id=new-location] {
 
 .list-item:hover {
   --hover-textdecoration:none;
+}
+
+@media only screen and (max-width:500px) {
+  .App-intro {
+    grid-template-columns: 90%;
+  }
 }

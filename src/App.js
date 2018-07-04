@@ -9,10 +9,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="topPerspective"></div>
-          <div className="App-intro">
-            <MainComponent />
-          </div>
+        <MainComponent />
       </div>
     );
   }
@@ -29,11 +26,14 @@ class MainComponent extends React.Component {
       searchMatches: new Set([]), 
       searchText: '',
       searchCurrItemIndex: 0,
-      itemsFetched: false 
+      itemsFetched: false,
+      searchHeight: 0 
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleBlur = this.handleDisplay.bind(this);
+    this.handleFocus = this.handleDisplay.bind(this);
     this.removeSubscribedItem = this.removeSubscribedItem.bind(this);
   }
 
@@ -152,6 +152,18 @@ class MainComponent extends React.Component {
     })
   }
 
+  async handleDisplay(display) {
+    const srchMatches = this.state.searchMatches
+    const searchHeightVal = display === false 
+                                        ? 0 
+                                        : srchMatches.size > 0 
+                                                                  ? srchMatches.size > 5 ? 30 : srchMatches.size * 3
+                                                                  : 0 
+    this.setState({
+      searchHeight: searchHeightVal
+    }) 
+  }
+
   handleSelect(val) {
     const newItems = [...this.state.listOfSubscribedItems]; 
     [...this.state.searchMatches].filter(item => item.Id === val).map(s => {
@@ -161,7 +173,8 @@ class MainComponent extends React.Component {
     const revisedItems = newItems.filter((val, idx, arr) => arr.findIndex(s => s.Id === val.Id) === idx)
     this.setState(({
       listOfSubscribedItems: new Set(revisedItems),
-      searchMatches: new Set([])
+      searchMatches: new Set([]),
+      searchHeight: 0
     }),() => {
       this.refs.searchTxtInput.value = ``;
       this.storeItemsLocally(); 
@@ -174,7 +187,10 @@ class MainComponent extends React.Component {
     const searchItems = await this.findMatches(searchTxt);
     this.setState({
       searchText: searchTxt,
-      searchMatches: searchItems.length > 0 ? new Set(searchItems) : new Set([])
+      searchMatches: searchItems.length > 0 ? new Set(searchItems) : new Set([]),
+      searchHeight: searchItems.length > 0 
+                        ? searchItems.length > 5 ? 30 : searchItems * 3  
+                        : 0
     }) 
   }
 
@@ -251,7 +267,8 @@ class MainComponent extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="App-intro">
+        <div className="topPerspective"></div>
         <div>
           <span className="App-title">{this.state.appTitle}</span>
         </div>
@@ -262,6 +279,8 @@ class MainComponent extends React.Component {
                   id="new-location"
                   onChange={async (e) => this.handleChange(e)}
                   onKeyDown={async (e) => this.handleKeyMove(e)}
+                  onBlur={async () => this.handleDisplay(false)}
+                  onFocus={async () => this.handleDisplay(true)}
                   ref="searchTxtInput"
                   placeholder={this.state.itemsFetched === true && this.state.listOfOriginalItems.size > 0 
                                       ? "awaiting input to search for coins.." 
@@ -320,7 +339,6 @@ class ItemList extends React.Component {
     {
       return (
             <div className="div-list-items">
-              <span className="div-list-title">List of Coins</span>
               <ul id="tblItem" className="item-content-ul">
               { 
                 itemsArr.map((item) => { 
@@ -368,7 +386,7 @@ class SearchList extends React.Component {
  
   render() {
     const searchItemsArr = [...this.props.parentState.searchMatches]
-    const searchHeight = searchItemsArr.length > 5 ? 30 : searchItemsArr * 3 
+    const searchHeight = this.props.parentState.searchHeight 
     return (
       <div className="search-dropdown-content" {...searchItemsArr.length > 0 && {style : {'--searchbox-height': `${searchHeight}vmax`}}} >
         <ul id="Srchdpdnlst" ref="Srchdpdnlst" >
