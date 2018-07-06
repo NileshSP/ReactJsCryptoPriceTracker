@@ -318,6 +318,7 @@ class ItemList extends React.Component {
     this.getItemText = this.getItemText.bind(this)
     this.removeItem = this.removeItem.bind(this)
   }
+
   removeItem(itemObj)
   {
     //console.log(`delete ${itemObj.Id}`)
@@ -331,7 +332,7 @@ class ItemList extends React.Component {
                 >{ !isNullOrUndefined(itemObj.Price) ? `${updateType}${itemObj.Price}` : `N/A` }</span>
               <span className='list-item' onClick={() => this.removeItem(itemObj)} title='Delete?' >X</span>
             </span>;
-}
+  }
 
   render() {
     const itemsArr = [...this.props.items]

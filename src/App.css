@@ -72,6 +72,7 @@ input[id=new-location] {
   background-color: #f1f1f1;
   width: 100%;
   border-radius: 5px;
+  font-size:8pt;
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -90,7 +91,7 @@ input[id=new-location] {
   border-radius: 5px;
 }
 
-/* Links inside the dropdown */
+/*START - Links inside the dropdown */
 .search-dropdown-content ul {
   color: black;
   padding: 3px;
@@ -118,29 +119,41 @@ input[id=new-location] {
 .li-active {
   background-color: #f1f1f1;
 }
+/*END - Links inside the dropdown */
 
-/* Links inside the dropdown */
 .item-content-ul {
-  color: black;
-  padding: 3px;
   text-decoration: none;
   display: block;
   cursor: pointer;
   list-style: none;
-  text-align:left; 
   margin:0px; 
-  padding:0px 0px 0px 0px; 
+  padding:0px; 
+  border: 0px solid green;
+  /* display:grid;
+  justify-content: center;
+  align-content: center;
+  grid-gap:3px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  min-width: 290px;
 }
 
 .item-content-li {
-  border: 1px solid transparent;
-  background-color: transparent;
-  color:black;
-  padding: 10px;
-  font-size: 14px;
-  border-bottom: solid 0.25px gray;
+  min-width: 270px;
+  margin:1px;
+  padding:5px;
+  border: 0px solid yellow;
+  background-color: rgba(0,0,0,0.1);
+  border-bottom: solid 0px white;
   animation: AddingAnimation 1s forwards 0s ease-in-out;
 }
+
+/* .item-content-li:last-child {
+  grid-column: span 2;
+} */
 
 .inline-search-text {
   text-decoration: underline;
@@ -149,36 +162,37 @@ input[id=new-location] {
 .list-item-container {
   width:100%;
   text-align: left;
-  font-size: 9pt;
+  font-size: 8pt;
   align-items: center;
   border: solid 0px red;
   display:grid;
-  grid-template-columns: 65% auto 15px ;
+  vertical-align: top;
+  grid-gap:5px;
+  grid-template-columns: 65% auto 10px ;
 }
 
 .list-item {
-  text-decoration: var(--hover-textdecoration);
   border: solid 0px blue;
 }
 
 .list-item:first-child {
-  text-decoration: var(--hover-textdecoration);
   color:steelblue;
-  font-weight:lighter
+  font-weight:bold;
+  font-size: 9pt;
 }
 
 .list-item:nth-child(2) {
-  text-decoration: var(--hover-textdecoration);
   text-align: right;
   font-weight:lighter;
 }
 
 .list-item:last-child {
-  text-decoration: var(--hover-textdecoration);
-  text-align: right;  
-  font-weight: normal;
-  font-size: 7pt;
-  color:red;
+  text-align: center;
+  font-weight: bold;
+  font-size: 5pt;
+  color:rgba(250, 4, 4, 0.829);
+  clip-path: circle(60% at 50% 50%);
+  background-color: rgba(0,0,0,0.2);
 }
 
 .list-item:hover {
