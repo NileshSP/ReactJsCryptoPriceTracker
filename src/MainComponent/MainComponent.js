@@ -60,6 +60,7 @@ class MainComponent extends React.Component {
         const listOrigItems = new Set(items === undefined ? [] : [...items]);
         getExistingItems = getExistingItems.size === 0 ? new Set([...listOrigItems].filter(s => [`BTC`,`ETH`,`LTC`,`DASH`,`XRP`].includes(s.Symbol))) : getExistingItems;  
         this.setState({ 
+          ...this.state,
           listOfOriginalItems: listOrigItems,
           listOfSubscribedItems: getExistingItems,
           itemsFetched:true
@@ -108,7 +109,7 @@ class MainComponent extends React.Component {
       };
     })
     //console.log(`${responseItems[2]} - ${responseItems[3]} price with flag as ${responseItems[4]} is ${this.priceChangeType()} ${responseItems[4] !== '4' ? 'with $' + responseItems[5] + ' in US dollars' : ''} `)
-    this.setState({ listOfSubscribedItems: updatedPricedItems})
+    this.setState({ ...this.state, listOfSubscribedItems: updatedPricedItems})
   }
 
   componentDidMount()
@@ -139,6 +140,7 @@ class MainComponent extends React.Component {
       }
     }
     this.setState({
+      ...this.state,
       searchCurrItemIndex: searchCurrItem
     })
   }
@@ -151,6 +153,7 @@ class MainComponent extends React.Component {
                                                                   ? srchMatches.size > 5 ? 30 : srchMatches.size * 3
                                                                   : 0 
     this.setState({
+      ...this.state,
       searchHeight: searchHeightVal
     }) 
   }
@@ -177,6 +180,7 @@ class MainComponent extends React.Component {
     const searchTxt = e.target.value;
     const searchItems = await this.findMatches(searchTxt);
     this.setState({
+      ...this.state,
       searchText: searchTxt,
       searchMatches: searchItems.length > 0 ? new Set(searchItems) : new Set([]),
       searchHeight: searchItems.length > 0 
