@@ -211,7 +211,7 @@ class MainComponent extends React.Component {
                   [...this.state.listOfOriginalItems].filter(item => {
                     const searchRegex = new RegExp(wordToMatch.replace(`\\`, `\\\\`), 'gi');
                     return item.FullName.match(searchRegex);
-                  }) 
+                  }).filter((val, idx, arr) => idx <= 5) 
               : []
            );
   };
